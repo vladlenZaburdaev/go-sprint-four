@@ -31,13 +31,13 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, errors.New("количество шагов не указано")
 	}
 
-	steps, err := strconv.Atoi(dataSlices[0])
+	steps, err := strconv.Atoi(stepsStr[0])
 	if err != nil {
 		return 0, "", 0, err
 	}
 
-	if steps < 0 {
-		return 0, "", 0, errors.New("количество шагов не может быть отрицательным")
+	if steps <= 0 {
+		return 0, "", 0, errors.New("количество шагов должно быть положительным")
 	}
 
 	typeOfActivity := strings.TrimSpace(dataSlices[1])
@@ -57,7 +57,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, errors.New("продолжительность должна быть положительной")
 	}
 
-	return steps, dataSlices[1], duration, nil
+	return steps, typeOfActivity, duration, nil
 }
 
 func distance(steps int, height float64) float64 {
@@ -71,7 +71,7 @@ func distance(steps int, height float64) float64 {
 
 func meanSpeed(steps int, height float64, duration time.Duration) float64 {
 	// TODO: реализовать функцию
-	if duration < 0 {
+	if duration <= 0 {
 		return 0
 	}
 
@@ -101,7 +101,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 			return "", err
 		}
 
-		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
 			typeOfActivity, duration.Hours(), distanceR, avarageSpeedR, caloriesR)
 
 		return result, err

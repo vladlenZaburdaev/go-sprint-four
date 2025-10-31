@@ -51,7 +51,7 @@ func DayActionInfo(data string, weight, height float64) string {
 	// TODO: реализовать функцию
 	steps, duration, err := parsePackage(data)
 	if err != nil {
-		log.Fatal("Произошла ошибка:", err)
+		log.Println("Произошла ошибка:", err)
 		return ""
 	}
 
