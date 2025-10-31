@@ -31,7 +31,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, errors.New("количество шагов не указано")
 	}
 
-	steps, err := strconv.Atoi(stepsStr[0])
+	steps, err := strconv.Atoi(stepsStr)
 	if err != nil {
 		return 0, "", 0, err
 	}
