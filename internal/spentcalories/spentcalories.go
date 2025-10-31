@@ -26,14 +26,35 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, fmt.Errorf("ожидалось три элемента, получено %d", len(dataSlices))
 	}
 
+	stepsStr := strings.TrimSpace(dataSlices[0])
+	if stepsStr == "" {
+		return 0, "", 0, errors.New("количество шагов не указано")
+	}
+
 	steps, err := strconv.Atoi(dataSlices[0])
 	if err != nil {
 		return 0, "", 0, err
 	}
 
-	duration, err := time.ParseDuration(dataSlices[2])
+	if steps < 0 {
+		return 0, "", 0, errors.New("количество шагов не может быть отрицательным")
+	}
+
+	typeOfActivity := strings.TrimSpace(dataSlices[1])
+	if typeOfActivity == "" {
+		return 0, "", 0, errors.New("тип активности не указан")
+	}
+
+	durationStr := strings.TrimSpace(dataSlices[2])
+	durationStr = strings.ReplaceAll(durationStr, "h0", "h")
+
+	duration, err := time.ParseDuration(durationStr)
 	if err != nil {
 		return 0, "", 0, err
+	}
+
+	if duration <= 0 {
+		return 0, "", 0, errors.New("продолжительность должна быть положительной")
 	}
 
 	return steps, dataSlices[1], duration, nil
@@ -54,10 +75,7 @@ func meanSpeed(steps int, height float64, duration time.Duration) float64 {
 		return 0
 	}
 
-	distanceKm, err := distance(steps, height)
-	if err != nil {
-		return 0
-	}
+	distanceKm := distance(steps, height)
 
 	avarageSpeed := distanceKm / duration.Hours()
 
@@ -66,7 +84,7 @@ func meanSpeed(steps int, height float64, duration time.Duration) float64 {
 
 func TrainingInfo(data string, weight, height float64) (string, error) {
 	// TODO: реализовать функцию
-	steps, typeOfActivity, duration, err := parseTraining(trainings)
+	steps, typeOfActivity, duration, err := parseTraining(data)
 	if err != nil {
 		log.Println("Ошибка при парсинге данных:", err)
 		return "", err
@@ -74,45 +92,38 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 
 	switch typeOfActivity {
 	case "Бег":
-		distanceR, err := distance(steps, height)
-		if err != nil {
-			return "", err
-		}
+		distanceR := distance(steps, height)
+
 		avarageSpeedR := meanSpeed(steps, height, duration)
-		if err != nil {
-			return "", err
-		}
-		caloriesR := RunningSpentCalories(steps, weight, height, duration)
+
+		caloriesR, err := RunningSpentCalories(steps, weight, height, duration)
 		if err != nil {
 			return "", err
 		}
 
 		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
-			typeOfActivity, duration, distanceR, avarageSpeedR, caloriesR)
+			typeOfActivity, duration.Hours(), distanceR, avarageSpeedR, caloriesR)
 
 		return result, err
 
 	case "Ходьба":
-		distanceW, err := distance(steps, height)
-		if err != nil {
-			return "", err
-		}
+		distanceW := distance(steps, height)
+
 		avarageSpeedW := meanSpeed(steps, height, duration)
+
+		caloriesW, err := WalkingSpentCalories(steps, weight, height, duration)
 		if err != nil {
 			return "", err
 		}
-		caloriesW := WalkingSpentCalories(steps, weight, height, duration)
-		if err != nil {
-			return "", err
-		}
+
+		result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+			typeOfActivity, duration.Hours(), distanceW, avarageSpeedW, caloriesW)
+
+		return result, err
+
 	default:
-		return errors.New("неизвестный тип активности")
+		return "", errors.New("неизвестный тип активности")
 	}
-
-	result := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
-		typeOfActivity, duration, distanceW, avarageSpeedW, caloriesW)
-
-	return result, err
 
 }
 
@@ -131,10 +142,7 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 		return 0, errors.New("продолжительность должна быть больше 0")
 	}
 
-	avarageSpeed, err := meanSpeed(steps, height, duration)
-	if err != nil {
-		return 0, err
-	}
+	avarageSpeed := meanSpeed(steps, height, duration)
 
 	calories := (weight * float64(avarageSpeed) * float64(duration.Minutes()) / minInH)
 
@@ -156,10 +164,7 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 		return 0, errors.New("продолжительность должна быть больше 0")
 	}
 
-	avarageSpeed, err := meanSpeed(steps, height, duration)
-	if err != nil {
-		return 0, err
-	}
+	avarageSpeed := meanSpeed(steps, height, duration)
 
 	calories := (weight * float64(avarageSpeed) * float64(duration.Minutes()) / minInH)
 
