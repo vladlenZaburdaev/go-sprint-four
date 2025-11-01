@@ -39,7 +39,7 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, err
 	}
 
-	if duration < 1 {
+	if duration <= 0 {
 		return 0, 0, err
 	}
 

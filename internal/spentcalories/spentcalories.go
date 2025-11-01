@@ -45,6 +45,10 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, errors.New("тип активности не указан")
 	}
 
+	if typeOfActivity != "Бег" && typeOfActivity != "Ходьба" {
+		return 0, "", 0, errors.New("неизвестный вид тренировки")
+	}
+
 	durationStr := strings.TrimSpace(dataSlices[2])
 	durationStr = strings.ReplaceAll(durationStr, "h0", "h")
 
