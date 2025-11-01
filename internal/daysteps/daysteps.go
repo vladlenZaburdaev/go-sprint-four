@@ -38,6 +38,16 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, fmt.Errorf("количество шагов не может быть отрицательным")
 	}
 
+	durationStr := dataSlices[1]
+
+	if durationStr == "0h0m" || durationStr == "0h" || durationStr == "0m" {
+		return 0, 0, fmt.Errorf("продолжительность должна быть положительной")
+	}
+
+	if strings.Contains(durationStr, "-") {
+		return 0, 0, fmt.Errorf("продолжительность не может быть отрицательной")
+	}
+
 	duration, err := time.ParseDuration(dataSlices[1])
 	if err != nil {
 		return 0, 0, err

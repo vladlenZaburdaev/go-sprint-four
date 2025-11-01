@@ -3,7 +3,6 @@ package spentcalories
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -36,21 +35,13 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, err
 	}
 
-	if steps == 0 {
-		return 0, "", 0, errors.New("количество шагов должно быть положительным")
-	}
-
-	if steps < 0 {
+	if steps <= 0 {
 		return 0, "", 0, errors.New("количество шагов должно быть положительным")
 	}
 
 	typeOfActivity := strings.TrimSpace(dataSlices[1])
 	if typeOfActivity == "" {
 		return 0, "", 0, errors.New("тип активности не указан")
-	}
-
-	if typeOfActivity != "Бег" && typeOfActivity != "Ходьба" {
-		return 0, "", 0, errors.New("неизвестный вид тренировки")
 	}
 
 	durationStr := strings.TrimSpace(dataSlices[2])
@@ -61,11 +52,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, err
 	}
 
-	if duration == 0 {
-		return 0, "", 0, errors.New("продолжительность должна быть положительной")
-	}
-
-	if duration < 0 {
+	if duration <= 0 {
 		return 0, "", 0, errors.New("продолжительность должна быть положительной")
 	}
 
@@ -98,7 +85,6 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	// TODO: реализовать функцию
 	steps, typeOfActivity, duration, err := parseTraining(data)
 	if err != nil {
-		log.Println("Ошибка при парсинге данных:", err)
 		return "", err
 	}
 
@@ -134,14 +120,14 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		return result, err
 
 	default:
-		return "", errors.New("неизвестный тип активности")
+		return "", errors.New("неизвестный тип тренировки")
 	}
 
 }
 
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 	// TODO: реализовать функцию
-	if steps < 0 {
+	if steps <= 0 {
 		return 0, errors.New("количество шагов должно быть больше или равно 0")
 	}
 	if weight <= 0 {
@@ -163,7 +149,7 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 
 func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 	// TODO: реализовать функцию
-	if steps < 0 {
+	if steps <= 0 {
 		return 0, errors.New("количество шагов должно быть больше или равно 0")
 	}
 	if weight <= 0 {
