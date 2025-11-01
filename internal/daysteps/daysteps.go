@@ -30,7 +30,11 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, err
 	}
 
-	if steps <= 0 {
+	if steps == 0 {
+		return 0, 0, fmt.Errorf("количество шагов не может быть отрицательным")
+	}
+
+	if steps < 0 {
 		return 0, 0, fmt.Errorf("количество шагов не может быть отрицательным")
 	}
 
@@ -39,7 +43,11 @@ func parsePackage(data string) (int, time.Duration, error) {
 		return 0, 0, err
 	}
 
-	if duration <= 0 {
+	if duration == 0 {
+		return 0, 0, err
+	}
+
+	if duration < 0 {
 		return 0, 0, err
 	}
 

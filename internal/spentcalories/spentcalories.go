@@ -36,7 +36,11 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, err
 	}
 
-	if steps <= 0 {
+	if steps == 0 {
+		return 0, "", 0, errors.New("количество шагов должно быть положительным")
+	}
+
+	if steps < 0 {
 		return 0, "", 0, errors.New("количество шагов должно быть положительным")
 	}
 
@@ -57,7 +61,11 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, err
 	}
 
-	if duration <= 0 {
+	if duration == 0 {
+		return 0, "", 0, errors.New("продолжительность должна быть положительной")
+	}
+
+	if duration < 0 {
 		return 0, "", 0, errors.New("продолжительность должна быть положительной")
 	}
 
